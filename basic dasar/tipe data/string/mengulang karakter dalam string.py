@@ -11,10 +11,9 @@ def confirm_lanjut():
             confirm_lanjut = input("Masih lanjut ? (y/n): ").strip().lower()
             if confirm_lanjut.lower() == 'n':
                 return 'n'
-                break
-
+            
             if confirm_lanjut.lower() == 'y':
-                break
+                return 'y'
 
             if confirm_lanjut.lower() != 'y':
                 print("Confirm hanya dengan 'y' = lanjut atau 'n' = tidak.")
