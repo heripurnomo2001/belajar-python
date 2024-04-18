@@ -10,9 +10,16 @@ Cetak string yang telah dimodifikasi.
 def input_str():
     while True:
         try:
-            input_str = input("Masukkan sebuah kata. (ketik 'quit') jika ingin keluar): ").strip()
+            input_str = input("Masukkan sebuah kata. (ketik 'quit') jika ingin keluar): ").strip().lower()
+            if input_str == 'quit':
+                return None
+            
             if input_str.strip(): # Jika input_str tidak kosong setelah dihilangkan spasi kanan dan kiri
                 return input_str
+
+            if input_str == "":
+                print("Input anda kosong. Masukkan sebuah kata.")
+                continue # Melanjutkan iterasi berikutnya dalam loop
 
         except ValueError as e:
             print(f"Input anda tidak valid! Kesalahan: {e}")
@@ -35,7 +42,10 @@ def index_ttn(jumlah_karakter):
     while True:
         try:
             index_ttn = int(input(f"Masukkan nomor karakter yang ingin anda ganti, antara 0 sampai {jumlah_karakter-1}: "))
-            return index_ttn
+            if 0 <= index_ttn < jumlah_karakter:
+                return index_ttn
+            else:
+                print(f"Index harus berada di antara 0 dan {jumlah_karakter-1}.")
         
         except ValueError:
             print("Input nomor anda tidak valid!")
@@ -58,6 +68,10 @@ def karakter_pgt():
 
 while True:
     string = input_str()
+    if string == None:
+        print("Terima kasih. Selamat tinggal.")
+        break
+    
     jumlah_karakter = len(string)
     print(f"String yang anda input adalah '{string}' ")
 
