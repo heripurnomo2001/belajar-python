@@ -1,16 +1,27 @@
+
 # MENGAKSES KARAKTER DALAM STRING
 
+'''
+Soal 1: Mengakses Karakter dalam String
+Buatlah sebuah program Python yang meminta pengguna untuk memasukkan sebuah string.
+Tampilkan panjang dari string tersebut.
+Mintalah pengguna untuk memasukkan sebuah indeks (bilangan bulat) antara 0 hingga panjang string dikurangi 1.
+Cetak karakter yang berada pada indeks yang dimasukkan pengguna.
+'''
 
 # function
 def input_kata():
     while True:
-        kata = input("Masukkan sebuah kata (ketik 'quit' untuk keluar): ")
-        if kata.strip() == "":
-            print("kata tidak boleh kosong.")
-        elif kata.lower() == 'quit':
-            return None
-        else:
-            return kata
+        try:
+            kata = input("Masukkan sebuah kata (ketik 'quit' untuk keluar): ")
+            if kata.strip() == "":
+                print("kata tidak boleh kosong.")
+            elif kata.lower() == 'quit':
+                return None
+            else:
+                return kata
+        except ValueError:
+            print("Kata yang anda masukkan tidak valid!")
 
 def input_indeks(panjang_kata):
     while True:
