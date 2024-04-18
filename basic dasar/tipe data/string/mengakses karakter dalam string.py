@@ -16,7 +16,7 @@ def input_indeks(panjang_kata):
     while True:
         try:
             n = int(input(f"Masukkan angka ke n untuk menampilkan karakter ke n. Angka >=0 dan <= {panjang_kata-1}: "))            
-            if 0 <= n <= panjang_kata-1:
+            if 0 <= n < panjang_kata:
                 return n # mengembalikan indeks yang valid
             else:
                 print(f"Angka yang dimasukkan harus di antara 0 dan {panjang_kata-1}.")
