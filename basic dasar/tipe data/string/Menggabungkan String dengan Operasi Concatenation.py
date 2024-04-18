@@ -5,35 +5,20 @@ Gabungkan dua string tersebut menjadi satu string baru menggunakan operator conc
 Cetak string hasil penggabungan.
 """
 
-def input_string1():
+def input_string(prompt):
     while True:
-        try:
-            string1 = input("Masukkan kata pertama: ")
-            if string1.strip() == "":
-                print("Kata pertama tidak boleh kosong!")
-            else:
-                return string1
-        except ValueError:
-            print("Kata yang anda masukkan tidak valid!")
-
-def input_string2():
-    while True:
-        try:
-            string2 = input("Masukkan kata ke-dua: ")
-            if string2.strip() == "":
-                print("Kata ke-dua tidak boleh kosong!")
-            else:
-                return string2
-        except ValueError:
-            print("Kata yang anda masukkan tidak valid!")
+        user_input = input(prompt)
+        if user_input.strip(): # jika user_input tidak kosong setelah di-strip() 
+            return user_input        
+        else:
+            print("Kata pertama tidak boleh kosong!")
 
 while True:
     
-    string1 = input_string1()
-    string2 = input_string2()
+    string1 = input_string("Masukkan kata pertama:")
+    string2 = input_string("Masukkan kata ke-dua:")
     print("string1 + string2 : ", string1+string2)
 
-    
     confirm_lanjut = input("Apakah lanjut {y/n): ")
     if confirm_lanjut == 'n':
         break
