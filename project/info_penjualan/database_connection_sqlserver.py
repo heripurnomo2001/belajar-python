@@ -31,8 +31,3 @@ def test_connection(server, database, username, password):
 
         # Kembalikan nilai False jika berhasil
         return False, conn_str
-        
-
-
-        
-        
