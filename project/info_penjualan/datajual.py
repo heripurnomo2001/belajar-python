@@ -1,17 +1,28 @@
+import os
+import pyodbc    
+from datetime import date, timedelta
+from database_connection_sqlserver import test_connection
+from colorama import Fore, Back, Style, init
+
+
+
+def bersih_layar():
+    # Membersihkan layar konsol
+    os.system('cls' if os.name == 'nt' else 'çlear')
+def init_database():
+    server = '10.1.1.64'
+    database = 'DataCollaboration'
+    username = 'IT50'
+    password = '64CollabPST'
+    return server, database, username, password
+
 def datajualharian():
     # Cek apakah saat ini berada pada waktu server sibuk ( sedang update data penjualan )
     cek_waktu, waktu_kini = batasan_waktu()
 
     if cek_waktu == 'y':      
-        import pyodbc    
-        from datetime import date, timedelta
-        from database_connection_sqlserver import test_connection
-
-        # Memberikan nilai untuk argumen-argumen yang diperlukan
-        server = '10.1.1.64'
-        database = 'DataCollaboration'
-        username = 'IT50'
-        password = '64CollabPST'
+        # Panggil fungsi untuk menginisialisasi nilai variabel database
+        server, database, username, password = init_database()
 
         # Panggil fungsi untuk menguji koneksi
         test_result, connection_string = test_connection(server, database, username, password)
@@ -53,7 +64,6 @@ def datajualharian():
             print(line)
             print(header)
             print(line)
-
             grand_total = 0
             width = 19
             for row in rows:
@@ -75,8 +85,9 @@ def datajualharian():
 
         else:
             print("Koneksi gagal. Tidak dapat menampilkan data penjualan")
-            
-
+    else:
+        info_server = info_svr(waktu_kini) 
+        print(info_server) 
 def batasan_waktu():
     from datetime import datetime
     
@@ -110,18 +121,10 @@ def input_tanggal(tg):
 def datajual_periode():
     # Cek apakah saat ini berada pada waktu server sibuk ( sedang update data penjualan )
     cek_waktu, waktu_kini = batasan_waktu()
-
     if cek_waktu == 'y':                    
-        import pyodbc
-        import locale
-        from datetime import date, timedelta, datetime  
-        from database_connection_sqlserver import test_connection
-
-        # Memberikan nilai untuk argumen-argumen yang diperlukan
-        server = '10.1.1.64'
-        database = 'DataCollaboration'
-        username = 'IT50'
-        password = '64CollabPST'
+        
+        # Panggil fungsi untuk menginisialisasi nilai variabel database
+        server, database, username, password = init_database()
 
         # Panggil fungsi untuk menguji koneksi
         test_result, connection_string = test_connection(server, database, username, password)
@@ -156,26 +159,28 @@ def datajual_periode():
             # Header dengan tanggal penjualan
             header = f"Data Penjualan Tanggal: {tanggal1.strftime('%d %B %Y')}"
 
+            bersih_layar() # Sebelum mencetak report layar dibersihkan
+
             # Tambahkan garis pemisah
-            panjang_garis = len(header)+8
+            panjang_garis = 34
             line = '-'* panjang_garis
             print("\n")
-            print(line)
             print("PT. PENERBIT ERLANGGA")
-            print("DATA PENJUALAN HARIAN")            
+            print("DATA PENJUALAN ")            
             print(f"Tanggal : {tanggal1:%d %B %Y} -s/d-")
             print(f"Tanggal : {tanggal2:%d %B %Y}")
-            print(line)
 
-            # Cetak garis pemisah dan header
-            #print(line)
-            #print(header)
-            #print(line)
+
+            #Header
+            header = ['CABANG', 'KWANTUM']
+            header_format = '{:<25}  {:<15}'.format(*header)
 
             grand_total = 0
-            width = 19
+            width = 19        
 
-
+            print(line)
+            print(header_format)
+            print(line)
             
             for row in rows:
                 cabang = row.cabang
@@ -184,25 +189,283 @@ def datajual_periode():
                 formatted_number = "{:,}".format(int(total))
                 
                 # Tentukan lebar yang diinginkan untuk string            
-                print(f"Cabang: {cabang}, Total: {formatted_number.rjust(width)}")
+                print(f"{cabang}     {formatted_number.rjust(width)}")
             formatted_gt_number = "{:,}".format(int(grand_total))    
             print(line)
-            spasi = " " * 11
-            print(f"Total Nasional: {spasi}{formatted_gt_number.rjust(width)}")
+            print(f"Total:         {formatted_gt_number.rjust(width)}")
             print(line)
             print('\n')
             # Tutup cursor dan koneksi
             cursor.close()
             conn.close()
             
-
         else:
             print("Koneksi gagal. Tidak dapat menampilkan data penjualan")
 
     else:
-        print(f"Waktu saat ini adalah: {waktu_kini:%H:%M:%S}. Maaf proses belum bisa dilanjutkan, karena server sedang sibuk update data penjualan! Coba lagi di menit ke-6.")        
-      
-        
+        info_server = info_svr(waktu_kini) 
+        print(info_server) 
+def topproduk():
+    
+    # Cek apakah saat ini berada pada waktu server sibuk ( sedang update data penjualan )
+    cek_waktu, waktu_kini = batasan_waktu()
+
+    # Panggil fungsi untuk menginisialisasi nilai variabel database
+    server, database, username, password = init_database()
+
+    # Panggil fungsi untuk menguji koneksi
+    test_result, connection_string = test_connection(server, database, username, password)
+
+    if cek_waktu == 'y' and test_result:                                                
+        try:
+            # Buat objek koneksi
+            conn = pyodbc.connect(connection_string) 
+
+            # Eksekusi query
+            query = f'''
+                SELECT TOP 10 a.kodbuk, b.itemname, b.agr_itemlevel AS kelas, b.agr_gradename AS jenjang,
+                SUM(a.kwantum) AS kwantum 
+                FROM invoice a 
+                INNER JOIN item b ON a.kodbuk = b.itemid
+                WHERE thlap = 2024 AND type = 'SALES'
+                GROUP BY a.kodbuk, b.itemname, b.agr_itemlevel, b.agr_gradename 
+                ORDER BY kwantum DESC
+                '''
+            cursor = conn.cursor()
+            # Menampilkan pesan bahwa query sedang dieksekusi
+            print("Sedang memproses query...")
+            # Menjalankan query    
+            cursor.execute(query)
+
+            # Menampilkan pesan setelah query selesai
+            print("Query selesai.")
+        except Exception as e:
+            print("Terjadi kesalahan saat menjalankan perintah execute:")
+            print(str(e))
+
+        # Ambil semua baris hasil query
+        rows = cursor.fetchall()
+
+        bersih_layar() # Sebelum mencetak report layar dibersihkan
+            
+        # Header dengan tanggal penjualan
+        header = f"10 Top Produk "
+
+        # Tambahkan garis pemisah
+        panjang_garis = 101
+        line = '-'* panjang_garis
+        print("\n")
+    
+        print("PT. PENERBIT ERLANGGA")
+        print("10 Top Produk")            
+        width = 19
+            
+        #Header
+        header = ['KODE BUKU', 'JUDUL', 'KWANTUM']
+        header_format = '{:<20} {:<72} {:<20}'.format(*header)
+                
+        #cetak header_format
+        print(line)
+        print(header_format)
+        print(line)
+        for row in rows:
+            kodbuk = row.kodbuk
+            itemname = row.itemname
+            kwantum = row.kwantum
+                
+            formatted_number = "{:,}".format(int(kwantum))
+                
+            # Tentukan lebar yang diinginkan untuk string            
+            print(f"{kodbuk} {itemname} {formatted_number.rjust(width)}")
+               
+        print(line)
+        print('\n')
+        #input("Tekan sembarang tombol untuk meninggalkan program.")
+        # Tutup cursor dan koneksi
+        cursor.close()
+        conn.close()           
+
+    else:
+        info_server = info_svr(waktu_kini) 
+        print(info_server) 
+
+def info_svr(waktu_kini):
+    pesan = f"Waktu saat ini adalah: {waktu_kini:%H:%M:%S}. Maaf proses belum bisa dilanjutkan, karena server sedang sibuk update data penjualan! Coba lagi di menit ke-6."
+    info = Style.BRIGHT + Fore.RED + pesan
+    return info
+
+def topcustomer():
+    # Cek apakah saat ini berada pada waktu server sibuk ( sedang update data penjualan )
+    cek_waktu, waktu_kini = batasan_waktu()
+
+    # Panggil fungsi untuk menginisialisasi nilai variabel database
+    server, database, username, password = init_database()
+
+    # Panggil fungsi untuk menguji koneksi
+    test_result, connection_string = test_connection(server, database, username, password)
+
+    if cek_waktu == 'y' and test_result:                                                
+        try:
+            # Buat objek koneksi
+            conn = pyodbc.connect(connection_string) 
+
+            # Eksekusi query
+            query = f'''
+            select top 10 c.cabang, a.kodlan, b.AGR_SCHOOLID as sekolah,b.agr_gradeid as jenjang,b.county as county,b.city, sum(a.kwantum) as kwantum 
+            from invoice a 
+            inner join customer b on a.kodlan = b.accountnum
+            inner join salesinvmap c on a.nofak = c.invoiceid
+            where thlap=2024 and type='SALES'
+            group by c.cabang, a.kodlan,b.AGR_SCHOOLID,b.agr_gradeid,b.county,b.city order by kwantum desc
+            '''        
+            cursor = conn.cursor()
+            # Menampilkan pesan bahwa query sedang dieksekusi
+            print("Sedang memproses query...")
+            # Menjalankan query    
+            cursor.execute(query)
+
+            # Menampilkan pesan setelah query selesai
+            print("Query selesai.")
+        except Exception as e:
+            print("Terjadi kesalahan saat menjalankan perintah execute:")
+            print(str(e))
+
+        # Ambil semua baris hasil query
+        rows = cursor.fetchall()
+
+        bersih_layar() # Sebelum mencetak report layar dibersihkan
+            
+        # Header dengan tanggal penjualan
+        header = f"10 Top Customer "
+
+        # Tambahkan garis pemisah
+        panjang_garis = 91
+        line = '-'* panjang_garis
+        print("\n")
+    
+        print("PT. PENERBIT ERLANGGA")
+        print("10 Top Customer")            
+        width = 19
+            
+        #Header
+        header = ['KODLAN', 'NAMA PELANGGAN', 'CABANG', 'KWANTUM']
+        header_format = '{:<15} {:<50} {:<16} {:<15}'.format(*header)
+                
+        #cetak header_format
+        print(line)
+        print(header_format)
+        print(line)
+        for row in rows:
+            cabang = row.cabang[0:4]    
+            kodlan = row.kodlan[0:15]
+            sekolah = row.sekolah[0:50]
+            kwantum = row.kwantum
+                
+            formatted_number = "{:,}".format(int(kwantum))
+                
+            # Tentukan lebar yang diinginkan untuk string            
+            print(f"{kodlan} {sekolah} {cabang} {formatted_number.rjust(width)}")
+               
+        print(line)
+        print('\n')
+        #input("Tekan sembarang tombol untuk meninggalkan program.")
+        # Tutup cursor dan koneksi
+        cursor.close()
+        conn.close()           
+
+    else:
+        info_server = info_svr(waktu_kini) 
+        print(info_server)        
+
+def topsalesman():
+    # Cek apakah saat ini berada pada waktu server sibuk ( sedang update data penjualan )
+    cek_waktu, waktu_kini = batasan_waktu()
+
+    # Panggil fungsi untuk menginisialisasi nilai variabel database
+    server, database, username, password = init_database()
+
+    # Panggil fungsi untuk menguji koneksi
+    test_result, connection_string = test_connection(server, database, username, password)
+
+    if cek_waktu == 'y' and test_result:                                                
+        try:
+            # Buat objek koneksi
+            conn = pyodbc.connect(connection_string) 
+
+            # Eksekusi query
+            query = f'''
+                select top 10 c.cabang, a.kodsal,d.name, sum(a.kwantum) as kwantum 
+                from invoice a 
+                inner join employee b on a.kodsal = b.emplid
+                inner join dirparty d on b.partyid = d.partyid
+                inner join salesinvmap c on a.nofak = c.invoiceid
+                where thlap=2024 and type='SALES'
+                group by c.cabang, a.kodsal,d.name order by kwantum desc
+            '''        
+            cursor = conn.cursor()
+            # Menampilkan pesan bahwa query sedang dieksekusi
+            print("Sedang memproses query...")
+            # Menjalankan query    
+            cursor.execute(query)
+
+            # Menampilkan pesan setelah query selesai
+            print("Query selesai.")
+        except Exception as e:
+            print("Terjadi kesalahan saat menjalankan perintah execute:")
+            print(str(e))
+
+        # Ambil semua baris hasil query
+        rows = cursor.fetchall()
+
+        bersih_layar() # Sebelum mencetak report layar dibersihkan
+            
+        # Header dengan tanggal penjualan
+        header = f"10 Top Customer "
+
+        # Tambahkan garis pemisah
+        panjang_garis = 75
+        line = '-'* panjang_garis
+        print("\n")
+    
+        print("PT. PENERBIT ERLANGGA")
+        print("10 Top Salesman")            
+        width = 19
+            
+        #Header
+        header = ['KODSAL', 'NAMA', 'CABANG', 'KWANTUM']
+        header_format = '{:<10} {:<30} {:<16} {:<15}'.format(*header)
+                
+        #cetak header_format
+        print(line)
+        print(header_format)
+        print(line)
+        for row in rows:
+            cabang = row.cabang[0:4]    
+            kodsal = row.kodsal[0:10]
+            salesman = row.name[:30]
+            if len(salesman) < 30:
+                kr_spasi = 30 - len(salesman)
+                spasi = " " *kr_spasi 
+                salesman = salesman + spasi
+            kwantum = row.kwantum
+                
+            formatted_number = "{:,}".format(int(kwantum))
+                
+            # Tentukan lebar yang diinginkan untuk string            
+            print(f"{kodsal} {salesman} {cabang} {formatted_number.rjust(width)}")
+               
+        print(line)
+        print('\n')
+        #input("Tekan sembarang tombol untuk meninggalkan program.")
+        # Tutup cursor dan koneksi
+        cursor.close()
+        conn.close()           
+
+    else:
+        info_server = info_svr(waktu_kini) 
+        print(info_server)        
+
+
 if __name__ == "__main__":
     main()
         

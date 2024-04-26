@@ -5,51 +5,42 @@ import subprocess
 import time
 from colorama import Fore, Back, Style
 
-# Nilai default untuk lebar terminal jika tidak dapat diambil secara dinamis
-terminal_width_default = 80
 
 def main_menu():
 
-    global terminal_width  # Mengakses variabel global
-    
-    try:
-        # Mengambil lebar terminal saat ini (jika berhasil)
-        terminal_width = os.get_terminal_size().columns
-    except OSError:
-        # Penanganan kesalahan jika os.get_terminal_size() tidak berhasil
-        terminal_width = terminal_width_default # Menentukan lebar terminal tetap 
-    
-
     # Menentukan teks menu
-    menu_title = "=== Menu ==="
-    option_1 = "1. About Me!"
-    option_2 = "2. Data Penjualan Harian"
-    option_3 = "3. Data Penjualan Periode"
-    exit_option = "4. Keluar"
+    title      = "                   INFO PENJUALAN                       "
+    menu_title = "======================= Menu ==========================="
+    option_1 = "    1. About Me!"
+    option_2 = "    2. Data Penjualan Hari ini"
+    option_3 = "    3. Data Penjualan Periode"
+    option_4 = "    4. Top 10 Produk"
+    option_5 = "    5. Top 10 Customer"
+    option_6 = "    6. Top 10 Salesman"
+    exit_option = "    7. Keluar"
+    garis_batas = "======================================================="
     
-    # Menghitung posisi tengah teks menu
-    title_centered = menu_title.center(terminal_width)
-    option_1_centered = option_1.center(terminal_width)
-    option_2_centered = option_2.center(terminal_width)
-    option_3_centered = option_3.center(terminal_width)
-    exit_option_centered = exit_option.center(terminal_width)
 
     # Membersihkan layar konsol
     os.system('cls' if os.name == 'nt' else 'çlear')
 
     beri_jarak_cetak()
-    
-    print(Fore.MAGENTA + Back.YELLOW + Style.DIM + title_centered)
+    print(title)
+    print(Fore.WHITE + Back.RED + menu_title)
     print(Style.RESET_ALL)  # Reset warna ke default
-    print(option_1_centered)
-    print(option_2_centered)
-    print(option_3_centered)
-    print(exit_option_centered)
+    print(option_1)
+    print(option_2)
+    print(option_3)
+    print(option_4)
+    print(option_5)
+    print(option_6)    
+    print(exit_option)
+    print(garis_batas)
 
 def option1():
     bersih_layar()        
     aboutme.main()  # Memanggil fungsi main() dari helloworld.py
-    input(Fore.RED + Back.YELLOW + Style.BRIGHT + "Tekan Enter untuk kembali ke menu utama...")  # Tunggu sampai pengguna menekan Enter
+    input(Style.BRIGHT + Fore.CYAN  + "Tekan Enter untuk kembali ke menu utama...")  # Tunggu sampai pengguna menekan Enter
     print(Style.RESET_ALL)  # Reset warna ke default
 
 def option2():
@@ -57,7 +48,7 @@ def option2():
     for i in range(1,3):
         print("\n")
     datajual.datajualharian()  # Memanggil datajualharian() dari datajual.py
-    input("Tekan Enter untuk kembali ke menu utama...")  # Tunggu sampai pengguna menekan Enter
+    input(Style.BRIGHT + Fore.CYAN + "Tekan Enter untuk kembali ke menu utama...")  # Tunggu sampai pengguna menekan Enter
     
 
 def option3():
@@ -66,7 +57,28 @@ def option3():
     for i in range(1,3):
         print("\n")
     datajual.datajual_periode()  # Memanggil datajual_periode() dari datajual.py
-    input("Tekan Enter untuk kembali ke menu utama...")  # Tunggu sampai pengguna menekan Enter
+    input(Style.BRIGHT + Fore.CYAN + "Tekan Enter untuk kembali ke menu utama...")  # Tunggu sampai pengguna menekan Enter
+
+def option4():
+    bersih_layar()    
+    for i in range(1,3):
+        print("\n")
+    datajual.topproduk()  # Memanggil fungsi top produk 
+    input(Style.BRIGHT + Fore.CYAN + "Tekan Enter untuk kembali ke menu utama...")  # Tunggu sampai pengguna menekan Enter
+
+def option5():
+    bersih_layar()    
+    for i in range(1,3):
+        print("\n")
+    datajual.topcustomer() # Memanggil fungsi top customer 
+    input(Style.BRIGHT + Fore.CYAN + "Tekan Enter untuk kembali ke menu utama...")  # Tunggu sampai pengguna menekan Enter
+
+def option6():
+    bersih_layar()    
+    for i in range(1,3):
+        print("\n")
+    datajual.topsalesman() # Memanggil fungsi top customer 
+    input(Style.BRIGHT + Fore.CYAN + "Tekan Enter untuk kembali ke menu utama...")  # Tunggu sampai pengguna menekan Enter
 
 def bersih_layar():
     # Membersihkan layar konsol
@@ -78,17 +90,8 @@ def beri_jarak_cetak():
 # Fungsi utama untuk menjalankan program
 def run_program():
     while True:
-        #os.system('cls' if os.name == 'nt' else 'clear')  # Membersihkan layar konsol
-        main_menu()
-
-        global terminal_width  # Mengakses variabel global
-
-        
-        text_choice ="Masukkan pilihan Anda (1/2/3/4): "
-        panjang_text_choice = len(text_choice)
-        spasi = int((terminal_width - panjang_text_choice)/2)
-
-        text_choice = " " * spasi + text_choice
+        main_menu()        
+        text_choice ="Masukkan pilihan Anda (Ketik pilihan angka: 1 -sd- 7): "
         print("\n" + text_choice, end="", flush=True)
         try:
             choice = input()
@@ -100,21 +103,23 @@ def run_program():
             elif choice == '3':
                 option3()
             elif choice == '4':
+                option4()
+            elif choice == '5':
+                option5()
+            elif choice == '6':
+                option6()
+            elif choice == '7':
                 bersih_layar()
                 beri_jarak_cetak()
                 text_salam = "Terima kasih telah menggunakan program. Sampai jumpa lagi!"
-                panjang_text_salam = len(text_salam)
-                spasi = int((terminal_width - panjang_text_salam)/2)
-                text_salam = " " * spasi + text_salam
-                print("\n" + text_salam, end="", flush=True)            
+                print("\n" + Style.BRIGHT + Fore.CYAN + text_salam, end="", flush=True)
                 time.sleep(2)
                 break
             else:
-                print("Pilihan tidak valid. Silakan masukkan angka 1, 2, 3, atau 4.")
-                input("Tekan sembarang tombol untuk kembali ke menu utama.")
+                print(Style.BRIGHT + Fore.RED + "Pilihan tidak valid. Silakan masukkan sebuah angka: 1 -sd- 7.")
+                input(Style.BRIGHT + Fore.CYAN + "Tekan Enter untuk kembali ke menu utama...")
         except ValueError:
-            print("Pilihan tidak valid. Silakan masukkan angka 1, 2, 3, atau 4.")
+            print(Style.BRIGHT + Fore.RED + "Pilihan tidak valid. Silakan masukkan sebuah angka: 1 -sd- 7.")
             
-
 # Panggil fungsi run_program() untuk memulai program
 run_program()

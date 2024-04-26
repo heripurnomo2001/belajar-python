@@ -16,12 +16,6 @@ def test_connection(server, database, username, password):
         # Buat objek koneksi
         conn = pyodbc.connect(conn_str)
 
-        # Cetak status koneksi berhasil        
-        # print("Koneksi berhasil!")
-
-        # Tutup koneksi
-        conn.close()
-
         # Kembalikan nilai True jika berhasil
         return True, conn_str
 

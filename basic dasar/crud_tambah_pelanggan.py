@@ -109,5 +109,7 @@ print(header_format)
 for item in pelanggan:
     data_format = '{:<20} {:<40}  {:<40}'.format(item['kode_pelanggan'], item['nama'], item['email'])
     print(data_format)
+
+input("Tekan sembarang tombol untuk meninggalkan program ini ..")
     
 
