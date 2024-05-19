@@ -1,0 +1,15 @@
+Di Python, kamus adalah struktur data yang berisi elemen dalam pasangan kunci-nilai di mana kunci digunakan untuk mengakses nilai-nilai dalam kamus. Python memiliki beberapa kamus bawaan seperti defaultdict. Dalam artikel ini, kita akan melihat berbagai cara untuk menggabungkan dua kamus.
+
+
+VARIASI CARA MENGGABUNGKAN DICTIONARY
+
+Merging Two Dictionaries in Python
+There are various ways in which Dictionaries can be merged by using various functions and constructors in Python. Below are some following ways:
+
+Using update()
+Using unpacking operator
+Using merge | operator
+Using loops and keys() method
+Using dict constructor
+Using the dict() constructor with the union operator (|)
+Using reduce()

@@ -53,16 +53,21 @@ def datajualharian():
             # Ambil semua baris hasil query
             rows = cursor.fetchall()
             
-            # Header dengan tanggal penjualan
-            header = f"Data Penjualan Hari ini: {tanggal.strftime('%d %B %Y')}"
+            ## Header dengan tanggal penjualan
+            #header = f"Data Penjualan Hari ini: {tanggal.strftime('%d %B %Y')}"
+
+            #Header
+            header = ['CABANG', 'KWANTUM']
+            header_format = '{:<25}  {:<15}'.format(*header)
 
             # Tambahkan garis pemisah
-            panjang_garis = len(header)+8
+            panjang_garis = 34
             line = '-'* panjang_garis
+            
 
             # Cetak garis pemisah dan header
             print(line)
-            print(header)
+            print(header_format)
             print(line)
             grand_total = 0
             width = 19
@@ -72,12 +77,17 @@ def datajualharian():
                 grand_total += total
                 formatted_number = "{:,}".format(int(total))
                 
+                ## Tentukan lebar yang diinginkan untuk string            
+                #print(f"Cabang: {cabang}, Total: {formatted_number.rjust(width)}")
+                #formatted_gt_number = "{:,}".format(int(grand_total))
+    
                 # Tentukan lebar yang diinginkan untuk string            
-                print(f"Cabang: {cabang}, Total: {formatted_number.rjust(width)}")
-            formatted_gt_number = "{:,}".format(int(grand_total))    
+                print(f"{cabang}     {formatted_number.rjust(width)}")
+            formatted_gt_number = "{:,}".format(int(grand_total))       
             print(line)
             spasi = " " * 11
-            print(f"Total Nasional: {spasi}{formatted_gt_number.rjust(width)}")
+            #print(f"Total Nasional: {spasi}{formatted_gt_number.rjust(width)}")
+            print(f"Total:         {formatted_gt_number.rjust(width)}")
             print(line)
             # Tutup cursor dan koneksi
             cursor.close()
@@ -87,7 +97,8 @@ def datajualharian():
             print("Koneksi gagal. Tidak dapat menampilkan data penjualan")
     else:
         info_server = info_svr(waktu_kini) 
-        print(info_server) 
+        print(info_server)
+        
 def batasan_waktu():
     from datetime import datetime
     
@@ -100,14 +111,13 @@ def batasan_waktu():
     
     
     # memeriksa apakah menit saat ini lebih dari 45 atau kurang dari 05
-    if current_minute >= 45 or current_minute < 5:
+    if current_minute == 45 or current_minute == 15:
         return 'n', current_time
     else:
         return 'y', current_time
 
 def input_tanggal(tg):
     from datetime import datetime
-    
     # Dapatkan tanggal 
     while True:
         try:
